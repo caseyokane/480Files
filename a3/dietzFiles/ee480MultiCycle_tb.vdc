@@ -1,0 +1,64 @@
+$date
+	Thu Apr  7 18:47:28 2016
+$end
+$version
+	Icarus Verilog
+$end
+$timescale
+	1s
+$end
+$scope module ee480MultiCycle_tb $end
+$var wire 1 ! halted $end
+$var reg 1 " clk $end
+$var reg 1 # reset $end
+$scope module PE $end
+$var wire 1 $ clk $end
+$var wire 1 % reset $end
+$var reg 1 & halt $end
+$var reg 16 ' ir [15:0] $end
+$var reg 16 ( pc [15:0] $end
+$var reg 5 ) s [4:0] $end
+$upscope $end
+$upscope $end
+$enddefinitions $end
+#0
+$dumpvars
+b11111 )
+b0 (
+bx '
+0&
+0%
+0$
+0#
+0"
+0!
+$end
+#10
+1#
+1%
+#20
+0#
+0%
+#30
+b11110 )
+1"
+1$
+#40
+0"
+0$
+#50
+b0xxxx )
+b1 (
+1"
+1$
+#60
+0"
+0$
+#70
+1&
+1!
+1"
+1$
+#80
+0"
+0$
