@@ -1,3 +1,10 @@
+// defining global constants
+`define WORD	[15:0]
+`define REGSIZE	[63:0]
+`define MEMSIZE	[65535:0]
+`define OPBITS	[3:0]
+`define SDBITS	[5:0]
+
 // opcode definitions
 `define ADD     4'b0000
 `define INVF    4'b0001
@@ -16,148 +23,333 @@
 `define JZSYSSZ 4'b1110
 `define LI      4'b1111
 
-module pc(pcIn, pcOut, rw)
-	input [15:0] pcIn;
-	input rw;
-	output [15:0] pcOut;
-	reg current_pc [15:0];
-	if (rw==0) pcOut = current_pc;
-	else current_pc = pcIn;
-endmodule
-
-module instmem(addr, op, s, d)
-	input [15:0] addr;
-	output [3:0] op;
-	output [5:0] s, d;
+module instmem(addr, op, s, d, reset);
+	input `WORD addr;
+	input reset;
+	output reg `OPBITS op;
+	output reg `SDBITS s, d;
 	// define the memory cells
-	reg [15:0] mem [65535:0]; 
+	reg `WORD mem `MEMSIZE; 
 	// output the correct instruction
 	always @(addr) begin
 		op = mem[addr][15:12];
-		s =  mem[addr][11:6];
-		d =  mem[addr][5:0];
+		d =  mem[addr][11:6];
+		s =  mem[addr][5:0];
+	end
+	// reset the instructions
+	always @(reset) $readmemh("inst.txt", mem);
+endmodule
+
+module registers(addrS, addrD, sOut, dOut, writeAddr, writeVal, writeEn, reset);
+	input `SDBITS addrS, addrD, writeAddr;
+	input `WORD writeVal;
+	input writeEn, reset;
+	output `WORD sOut, dOut;
+	// define the memory cells
+	reg `WORD mem `MEMSIZE; 
+	// output the correct instruction
+	assign sOut = mem[addrS];
+	assign dOut = mem[addrD];
+	always @(writeEn, writeAddr, writeVal) begin
+	if (writeEn==1) 
+		// make sure you're not overwriting one of the bottom 4 special registers
+		if (writeAddr >= 4) mem[writeAddr] = writeVal; 
+	end
+	// reset the registers
+	always @(reset) begin 
+		$readmemh("reg.txt", mem);
+		mem [0] = 0;
+		mem [1] = 1;
+		mem [2] = 16'h8000;
+		mem [3] = 16'hffff;
 	end
 endmodule
 
-module registers(addrS, addrD, sOut, dOut, writeAddr, writeVal, writeEn)
-	input [15:0] addrS, addrD, writeAddr, writeVal;
-	input writeEn; // write enable
-	output [15:0] sOut, dOut;
-	// define the memory cells
-	reg [15:0] mem [65535:0]; 
-	// output the correct instruction
-	always @(addrS, addrD) begin
-		sOut = mem[addrS];
-		dOut = mem[addrD];
+module mux16bit2to1(a, b, s, out);
+	input `WORD a, b;
+	input s;
+	output reg `WORD out;
+	always @(s, a, b) begin
+		if(s==0) out = a;
+		else out = b;
 	end
-	if (writeEn==1) assign mem[writeAddr] = writeVal;
 endmodule
 
-module mux8bit2to1(a, b, s, out)
-	input [15:0] a, b;
-	intput s;
-	output [15:0] out;
-	if(s==0) assign out = a;
-	else assign out = b;
+module alu(op, num1, num2, out);
+	input `OPBITS op;
+	input `WORD num1, num2;
+	output reg `WORD out;
+	always @(op, num1, num2) begin case(op)
+		`ADD: out = num1 + num2;
+		`AND: out = num1 & num2;
+		`ANY: begin	
+			if (num2 != 0)
+				out = 1;
+			else
+				out = 0;
+			end
+		`OR: out = num1 | num2;
+		`SHR: out = num1 >> 1;
+		`XOR: out = num1 ^ num2;
+		`DUP: out = num1;
+		default: out = 0;
+ 	endcase end
 endmodule
 
-module alu(op, num1, num2, out)
-	input [3:0] op;
-	input [15:0] num1, num2;
-	output [15:0] out;
-endmodule
-
-module datamem(addrIn, valIn, out, readEn, writeEn)
-	input [15:0] addrIn, valIn, out;
-	input readEn, writeEn; // write enable
-	output [15:0] out;
+module datamem(readAddr, writeAddr, writeVal, out, readEn, writeEn, reset);
+	input `WORD readAddr, writeAddr, writeVal;
+	input readEn, writeEn, reset;
+	output reg `WORD out;
 	// define the memory cells
-	reg [15:0] mem [65535:0]; 
-	// output the correct instruction
-	always @(addrIn) if (readEn==1) assign out = mem[addr];
-	if (writeEn==1) assign mem[writeAddr] = writeVal;
+	reg `WORD mem`MEMSIZE; 
+	// output the correct data
+	always @(readAddr or readEn or writeAddr or writeEn or writeVal)
+	begin
+	if (readEn==1) 
+		out = mem[readAddr];
+	if (writeEn==1)
+		mem[writeAddr] = writeVal;
+	end
+	// reset the mem
+	always @(reset) $readmemh("datamem.txt", mem);
 endmodule
 
-module instBuffer (opIn, sIn, dIn, opOut, sOut, dOut, clock)
-	input clock;
-	input [3:0] opIn;
-	input [5:0] sIn, dIn;
-	output [3:0] opOut;
-	output [5:0] sOut, dOut;
-	always @(posedge clock) begin
+module instBuffer (enable, opIn, sIn, dIn, opOut, sOut, dOut, clock, nop, reset);
+	input clock, enable, nop, reset;
+	input `OPBITS opIn;
+	input `SDBITS sIn, dIn;
+	output reg `OPBITS opOut;
+	output reg `SDBITS sOut, dOut;
+	always @(posedge clock) if(nop) begin
+		opOut <= 0;
+		sOut <= 0;
+		dOut <= 0;
+	end else if(enable) begin
 		opOut <= opIn;
 		sOut <= sIn;
 		dOut <= dIn;
 	end
-endmodule
 
-module regBuffer (sIn, dIn, sOut, dOut, clock, opIn, opOut)
-	input clock;
-	input [15:0] sIn, dIn;
-	output [15:0] sOut, dOut;
-	always @(posedge clock) begin
-		sOut <= sIn;
-		dOut <= dIn;
+	always@(reset) begin
+		opOut = 0;
+		sOut = 0;
+		dOut = 0;
 	end
 endmodule
 
-module aluBuffer (clock, aluIn, aluOut, memIn, memOut, opIn, opOut);
-	input clock;
-	input [15:0] aluIn, memIn;
-	output [15:0] aluOut, memOut;
-	always @(posedge clock) begin
+module regBuffer (enable, sIn, dIn, sOut, dOut, clock, opIn, opOut, dAddrIn, dAddrOut, nop, reset);
+	input clock, enable, reset;
+	input `WORD sIn, dIn;
+	input `OPBITS opIn;
+	input `SDBITS dAddrIn;
+	input nop;
+	output reg `WORD sOut, dOut;
+	output reg `OPBITS opOut;
+	output reg `SDBITS dAddrOut;
+	always @(posedge clock) if(nop) begin
+		sOut <= 0;
+		dOut <= 0;
+		opOut <= 0;
+		dAddrOut <= 0;
+	end else if(enable) begin
+		sOut <= sIn;
+		dOut <= dIn;
+		opOut <= opIn;
+		dAddrOut <= dAddrIn;
+	end
+	always @(reset) begin
+		sOut = 0;
+		dOut = 0;
+		opOut = 0;
+		dAddrOut = 0;
+	end
+endmodule
+
+module aluBuffer (enable, clock, aluIn, aluOut, memIn, memOut, opIn, opOut, aluD, storeD, nop, reset);
+	input clock, enable, reset;
+	input `WORD aluIn, memIn;
+	input `OPBITS opIn;
+	input `SDBITS aluD;
+	input nop;
+	output reg `WORD aluOut, memOut;
+	output reg `OPBITS opOut;
+	output reg `SDBITS storeD;
+	always @(posedge clock) if(nop) begin
+		aluOut <= 0;
+		memOut <= 0;
+		opOut <= 0;
+		storeD <= 0;
+	end else if(enable) begin
 		aluOut <= aluIn;
 		memOut <= memIn;
 		opOut <= opIn;
+		storeD <= aluD;
+	end
+	
+	always @(reset) begin
+		aluOut = 0;
+		memOut = 0;
+		opOut = 0;
+		storeD = 0;
 	end
 endmodule
 
-module incrementor(in, out, clock, enable)
-	input clock;
-	input [15:0] in;
-	output [15:0] out;
-	always @(posedge clock) if(enable) out <= in+1;
+module incrementor(in, out, clock, enable, reset);
+	input clock, enable, reset;
+	input `WORD in;
+	output reg `WORD out;
+	always @* begin
+		if (enable) out = in+1;
+	end
+	always @(reset) out = 1;
 endmodule
 
-module processor (clock, reset)
+module dependDetect(reset, opif, oprr, opalu, oprw, sif, srr, dif, drr, dalu, drw, ifenable, rrenable, aluenable, ifNop, rrNop, aluNop);
+	input `OPBITS opif, oprr, opalu, oprw;
+	input `SDBITS sif, srr;
+	input `SDBITS dif, drr, dalu, drw;
+	input reset, ifNop, rrNop, aluNop;
+	output reg ifenable, rrenable, aluenable;
+	
+	// reset
+	always @(reset) begin
+		ifenable = 1;
+		rrenable = 1;
+		aluenable = 1;
+	end
+	
+	always @* begin
+	// pause the reg read stage
+		if( 
+			((oprr==0&srr==0&drr==0)|(
+				(srr!=dalu)&(srr!=drw)
+			))&(
+			(opalu==0&dalu==0)|(
+				(drr!=dalu)&(drr!=drw)
+			)))
+		rrenable = 1;
+		else rrenable = 0;
+	// pause the instruction fetch stage
+		if(rrenable == 1) ifenable = 1;
+		else ifenable = 0;
+	end
+endmodule
+
+module processor (halt, clock, reset);
 input clock, reset;
+output reg halt;
+	// instruction fetch wires
+	wire `WORD pcIn, pcOut, pcInc, instmemAddr;
+	wire `OPBITS instOp;
+	wire `SDBITS instS, instD;
+	wire ifBufferEnable;
+	reg pcWriteEnable, liFlag, ifNop;
+	reg `SDBITS liDest;
+	reg `WORD pc;
+	// register read wires
+	wire `OPBITS regOp;
+	wire `SDBITS regS, regD;
+	wire `WORD regValS, regValD;
+	wire rrBufferEnable;
+	reg rrNop;
+	// ALU/DataMem wires
+	wire `WORD aluOut, memOut, aluS, aluD;
+	wire `OPBITS aluOp;
+	wire `WORD memWriteAddr, writeValIn;
+	wire `SDBITS aluDAddr;
+	wire aluBufferEnable;
+	reg memReadEn, aluNop;
+	// register store wires
+	wire `WORD aluStore, memStore, storeVal, jumpAddr;
+	wire `OPBITS storeOp;
+	wire `SDBITS regWriteAddr;
+	reg jumpEn;
+	reg aludatacontrol, regWriteEn, memWriteEn;
+	
+	// dependancy detection
+	dependDetect dependDetect1(reset, instOp, regOp, aluOp, storeOp, instS, regS, instD, regD, aluDAddr, regWriteAddr, ifBufferEnable, rrBufferEnable, aluBufferEnable, ifNop, rrNop, aluNop);
+	
+	// processor reset
+	always @(reset) begin
+		halt = 0;
+		pc = 0;
+		pcWriteEnable = 1;
+		jumpEn = 0;
+		liFlag = 0;
+		ifNop = 0;
+		rrNop = 0;
+		aluNop = 0;
+	end
+	
+	// nops
+	always @* begin
+		// if nop
+		if (!ifBufferEnable & rrBufferEnable)
+		ifNop = 1;
+		else ifNop = 0;
+		// rr nop
+		if (!rrBufferEnable & aluBufferEnable) rrNop = 1;
+		else rrNop = 0;
+		// alu nop
+		if (!aluBufferEnable) aluNop = 1;
+		else aluNop = 0;
+	end
+	
 	// instruction fetch stage
-	wire [15:0] pcIn, pcOut, instmemAddr;
-	wire [3:0] instOp;
-	wire [5:0] instS, instD;
-	reg liFlag;
-	pc pc1(pcIn, pcOut);
-	instmem instmem1(instmemAddr,instOp, instS, instD);
-	instBuffer instBuffer1(instOp, instS, instD, regOp, regS, regD, clock);
-	incrementor incrementor1(pcOut, pcInc, clock, incEn);
-	mux8bit2to1 pcMux(pcInc, jumpAddr, jumpEn, pcIn);
-	always @(posedge clock) begin
-		if(instOp==`LI) liFlag = 1;
+	// program counter
+	always @(posedge clock)	if (pcWriteEnable&ifBufferEnable) pc <= pcIn;
+	assign pcOut = pc;
+	// li instructions
+	always @(instOp) begin
+		if (instOp==`LI) begin liFlag = 1; liDest = instD; end
 		else liFlag = 0;
 	end
 	
+	instmem instmem1(pc,instOp, instS, instD, reset);
+	instBuffer instBuffer1(ifBufferEnable, instOp, instS, instD, regOp, regS, regD, clock, ifNop, reset);
+	incrementor incrementor1(pcOut, pcInc, clock, ifBufferEnable, reset);
+	mux16bit2to1 pcMux(pcInc, jumpAddr, jumpEn, pcIn);
+	
 	// register read stage
-	wire [3:0] regOp;
-	wire [5:0] regS, regD;
-	wire [15:0] sValReg, dValReg;
-	registers registers1(regS, regD, sValReg, dValReg, writeAddr, storeVal, regWriteEn)
-	regBuffer regBuffer1(sValReg, dValReg, aluS, aluD, clock, regOp, aluOp);
+	registers registers1(regS, regD, regValS, regValD, regWriteAddr, storeVal, regWriteEn, reset);
+	regBuffer regBuffer1(rrBufferEnable, regValS, regValD, aluS, aluD, clock, regOp, aluOp, regD, aluDAddr, rrNop, reset);
 	
 	// ALU/DataMem stage
-	wire [15:0] aluS, aluD, aluOut, memOut;
-	wire [3:0] aluOp;
 	alu alu1(aluOp, aluS, aluD, aluOut);	
-	aluBuffer aluBuffer1(clock, aluOut, aluStore, memOut, memStore, storeOp);
+	datamem datamem1(aluD, memWriteAddr, writeValIn, memOut, memReadEn, memWriteEn, reset);
+	aluBuffer aluBuffer1(aluBufferEnable, clock, aluOut, aluStore, memOut, memStore, aluOp, storeOp, aluDAddr, regWriteAddr, aluNop, reset);
 	
 	// register store stage
-	wire [15:0] aluStore, memStore, storeVal;
-	wire [3:0] storeOp;
-	wire regWriteEn, aludatacontrol;
-	// because of the way the opcodes were chosen, an alu op occured as long as bits 2 and 3 of the opcode were not both 1s.
-	if (storeOp[3:2] != 2'b11) aludatacontrol = 0;
-	else aludatacontrol = 1;
-	mux8bit2to1 mux_aludatacontrol(aluStore, memStore, aludatacontrol, storeVal);
-	if ((storeOp!=`ST)&(storeOp!=`JZSYSSZ)) regWriteEn = 1;
-	else regWriteEn = 0;
-	
+	// because of the way the opcodes were chosen, an alu op occurred as long as bits 2 and 3 of the opcode were not both 1
+	always @(storeOp) begin
+		// storing from alu or memory
+		if (storeOp[3:2] != 2'b11) assign aludatacontrol = 0;
+		else assign aludatacontrol = 1;
+		// store into registers
+		if ((storeOp!=`ST)&(storeOp!=`JZSYSSZ)) assign regWriteEn = 1; 
+		else assign regWriteEn = 0;
+		// store into main memory
+		if (storeOp==`ST) assign memWriteEn = 1;
+		else assign memWriteEn = 0;
+	end
+	mux16bit2to1 mux_aludatacontrol(aluStore, memStore, aludatacontrol, storeVal);
 endmodule
+
+module testbench();
+	reg reset = 0;
+	reg clk = 0;
+	wire halted;
+	processor PE(halted, clk, reset);
+	initial begin
+		$dumpfile("ee480.2.0.txt");
+		$dumpvars(0, PE);
+		#10 reset = 1;
+		#10 reset = 0;
+		while (!halted) begin
+			#10 clk = 1;
+			#10 clk = 0;
+		end
+		$finish;
+	end
+endmodule
+
