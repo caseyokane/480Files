@@ -1,3 +1,12 @@
+//Constant Sizes
+`define REGSIZE [63:0]
+`define MEMSIZE [65535:0]
+`define WORD	[15:0]
+`define Opcode	[15:12]
+`define Src 	[11:6]
+`define Dst	[5:0]
+
+
 // opcode definitions
 `define ADD     4'b0000
 `define INVF    4'b0001
@@ -17,9 +26,9 @@
 `define LI      4'b1111
 
 module pc(pcIn, pcOut, rw)
-	input [15:0] pcIn;
+	input 'WORD pcIn;
 	input rw;
-	output [15:0] pcOut;
+	output 'WORD pcOut;
 	reg current_pc [15:0];
 	if (rw==0) pcOut = current_pc;
 	else current_pc = pcIn;
@@ -153,7 +162,8 @@ input clock, reset;
 	wire [15:0] aluStore, memStore, storeVal;
 	wire [3:0] storeOp;
 	wire regWriteEn, aludatacontrol;
-	// because of the way the opcodes were chosen, an alu op occured as long as bits 2 and 3 of the opcode were not both 1s.
+	// because of the way the opcodes were chosen, an alu op occured as long 
+	//as bits 2 and 3 of the opcode were not both 1s.
 	if (storeOp[3:2] != 2'b11) aludatacontrol = 0;
 	else aludatacontrol = 1;
 	mux8bit2to1 mux_aludatacontrol(aluStore, memStore, aludatacontrol, storeVal);
