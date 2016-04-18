@@ -18,8 +18,9 @@ EE 480 Assignment 3: A Faster IDIOT
 
 
 Compilation Instructions:
-	Currently no Makefile for this assignment. Code compiled with "iverilog 
-	pipe.v -o pipeProg" then open GTKWave using "vvp pipeProg"
+	Currently no Makefile for this assignment. Code compiled with 
+	"iverilog -o pipeProg pipe.v" then open GTKWave using "vvp pipeProg" and 
+	"gtkwave ee480.2.0.txt"
 	
 Testcase Instructions:
 	As mentioned above, the two text files inst and inst1 that are used as 
