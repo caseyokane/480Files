@@ -1,0 +1,20 @@
+li $u0, 0x0500
+li $u1, 0x0600
+
+jz $one, $u0
+li $u2, 0x2222
+add $u2, $one
+
+jz $zero, $u1
+li $u3, 0x3333
+add $u3, $one
+
+.origin 0x0500
+li $u10, 0x0FFE
+add $u10, $one
+
+.origin 0x0600
+li $u10, 0x0EED
+add $u10, $one
+
+

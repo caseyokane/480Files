@@ -1,0 +1,16 @@
+0 ADD    
+1 INVF   
+2 ADDF   
+3 MULF   
+4 AND    
+5 OR     
+6 XOR    
+7 ANY    
+8 DUP    
+9 SHR    
+A F2I    
+B I2F    
+C LD     
+D ST     
+E JZ
+F LI     
