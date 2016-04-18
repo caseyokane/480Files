@@ -37,7 +37,7 @@ module instmem(addr, op, s, d, reset);
 		s =  mem[addr][5:0];
 	end
 	// reset the instructions
-	always @(reset) $readmemh("inst.txt", mem);
+	always @(reset) $readmemh("ReqFiles/inst.txt", mem);
 endmodule
 
 module registers(addrS, addrD, sOut, dOut, writeAddr, writeVal, writeEn, reset);
@@ -57,7 +57,7 @@ module registers(addrS, addrD, sOut, dOut, writeAddr, writeVal, writeEn, reset);
 	end
 	// reset the registers
 	always @(reset) begin 
-		$readmemh("reg.txt", mem);
+		$readmemh("ReqFiles/reg.txt", mem);
 		mem [0] = 0;
 		mem [1] = 1;
 		mem [2] = 16'h8000;
@@ -109,7 +109,7 @@ module datamem(readAddr, writeAddr, writeVal, out, writeEn, reset);
 		if (writeEn==1) mem[writeAddr] = writeVal;
 	end
 	// reset the mem
-	always @(reset) $readmemh("datamem.txt", mem);
+	always @(reset) $readmemh("ReqFiles/datamem.txt", mem);
 endmodule
 
 module instBuffer (enable, opIn, sIn, dIn, opOut, sOut, dOut, clock, nop, reset);
