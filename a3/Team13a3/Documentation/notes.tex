@@ -41,7 +41,7 @@ register file and the processor itself.
 Similar to the previous assignment, global constants were declared both to 
 represent common data structures (like 'WORD) and the different Opcode 
 signals that could be received by the processor (like 'OpAdd or any of the 
-instructions specified by the IDIOT ISA). Also, the AIK specification IDIOT\_SPEC
+instructions specified by the IDIOT ISA). Also, the AIK specification aikspec
 provided by Dr. Dietz following the submission of Assignment 2 was used
 for the sake of consistency.
 
@@ -157,18 +157,30 @@ This is same example provided by Dr. Dietz in the assignment 3 prompt, it goes t
 each of the operations and ensures that it is working correctly. This was used as our main 
 test file as it seemed to provide good coverage over the different cases that we hoped to test
 
-\subsubsection{lijmptest.txt/inst1.txt}
-This is simple assembly file that was created while debugging the code using GTKwave. It essentially preforms a simple test  that looks at load immediate and jump operations.
+\subsubsection{test2Src.txt/inst1.txt}
+This is simple assembly file that was created while debugging the code using GTKwave. It essentially preforms a simple test  that looks at load immediate and jump operations. The 
+resulting signal representation seemed to represent the expected values
+
+\subsubsection{test3Src.txt/inst2.txt}
+This assembly file is used to test an li instruction squashed by the sz instruction which 
+compares results store in a register \$u3 and \$u42 and compare them to each other, squashing the sys HALT if so. This seems to operate without issues. 
 
 \subsection{Test Coverage}
+Unfortunately for this assignment, we were unable to implement the covered testing tool.
+This is largely due to time constraints experienced in the final stages of the project. 
 
 %%%%%%%%%%%%%%%%%%%%%%%
 \section{Issues}
 \subsection{Features Not implemented}
 Currently all instructions in the IDIOT ISA seem to implemented as
 designed. Some issues may lie with with limited ability of the provided testbench as 
-it primarily consists of two separate test files inst.txt and inst2.txt.  While these two
-files are able to test the majority of the necessary instructions used, there are still 
+it primarily consists of three separate test files inst.txt, inst1.txt and inst2.txt.  While these two
+files are able to test the majority of the necessary instructions used, there are still some 
+aspects of the processor that may not be exhaustively tested (at least at some boundary 
+cases). 
+
+Also, as mentioned above, the covered tool was not implemented with this assignment so 
+the group doesn't have an report to show concerning line coverage. 
 
 \subsection{Notable workarounds}
 \subsubsection{LI Register }
@@ -184,7 +196,7 @@ value in memory.
 As it currently stands there are no known issues, but this might just involve issues 
 created by the limited test files (as detailed above). All aspects of the assignment
 seemed to be functional in the debugging process but things might be incorrect due
-to 
+to human error or incorrect expectations from the execution of the processor.
 
 \subsection{Possible Errors}
 While everything appears to be functional there might be some issues with load/store
@@ -201,7 +213,7 @@ The high level diagram for the processor is shown on the following page. A large
 \begin{figure}
 \centering
 \includegraphics[scale=0.33]{DraftDesign.pdf}
-\caption{Initial }
+\caption{Initial Top Level Design}
 \label{Design Draft}
 \end{figure}
 
