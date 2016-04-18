@@ -23,27 +23,11 @@
 `define JZSYSSZ 4'b1110
 `define LI      4'b1111
 
-<<<<<<< HEAD
-module pc(pcIn, pcOut, rw)
-	input 'WORD pcIn;
-	input rw;
-	output 'WORD pcOut;
-	reg current_pc [15:0];
-	if (rw==0) pcOut = current_pc;
-	else current_pc = pcIn;
-endmodule
-
-module instmem(addr, op, s, d)
-	input [15:0] addr;
-	output [3:0] op;
-	output [5:0] s, d;
-=======
 module instmem(addr, op, s, d, reset);
 	input `WORD addr;
 	input reset;
 	output reg `OPBITS op;
 	output reg `SDBITS s, d;
->>>>>>> 73f4d909e692e353ed9378854598b6b8c49d9db4
 	// define the memory cells
 	reg `WORD mem `MEMSIZE; 
 	// output the correct instruction
@@ -336,20 +320,6 @@ output reg halt;
 	aluBuffer aluBuffer1(aluBufferEnable, clock, aluOut, aluStore, memOut, memStore, aluOp, storeOp, aluDAddr, regWriteAddr, aluNop, reset);
 	
 	// register store stage
-<<<<<<< HEAD
-	wire [15:0] aluStore, memStore, storeVal;
-	wire [3:0] storeOp;
-	wire regWriteEn, aludatacontrol;
-	// because of the way the opcodes were chosen, an alu op occured as long 
-	//as bits 2 and 3 of the opcode were not both 1s.
-	if (storeOp[3:2] != 2'b11) aludatacontrol = 0;
-	else aludatacontrol = 1;
-	mux8bit2to1 mux_aludatacontrol(aluStore, memStore, aludatacontrol, storeVal);
-	if ((storeOp!=`ST)&(storeOp!=`JZSYSSZ)) regWriteEn = 1;
-	else regWriteEn = 0;
-	
-endmodule
-=======
 	// because of the way the opcodes were chosen, an alu op occurred as long as bits 2 and 3 of the opcode were not both 1
 	always @(storeOp) begin
 		// storing from alu or memory
@@ -383,4 +353,3 @@ module testbench();
 	end
 endmodule
 
->>>>>>> 73f4d909e692e353ed9378854598b6b8c49d9db4
