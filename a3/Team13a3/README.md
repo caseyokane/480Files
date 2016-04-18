@@ -15,6 +15,9 @@ EE 480 Assignment 3: A Faster IDIOT
     | Documentation/
         | Directory containing documentation source files
         | notes.tex - implementer's notes source
+        | notes.pdf - final draft of the implementor's notes
+        | DesignDraft.pdf - enlarged version of the high level design for the
+        	  processor
 
 
 Compilation Instructions:

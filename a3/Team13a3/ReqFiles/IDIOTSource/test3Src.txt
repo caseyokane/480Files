@@ -1,4 +1,5 @@
-  li   $u55,0x5335
-  xor  $u55,$u3     ;compare for equality
-  sz   $u55
-  sys               ;if the buck stopped here, bad!
+li   $u3, 0x4224
+li   $u42,0x4224
+xor  $u42,$u3     
+sz   $u42
+sys               
