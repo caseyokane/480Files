@@ -1,0 +1,4 @@
+  li   $u55,0x5335
+  xor  $u55,$u3     ;compare for equality
+  sz   $u55
+  sys               ;if the buck stopped here, bad!
