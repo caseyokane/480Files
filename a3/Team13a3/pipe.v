@@ -432,6 +432,3 @@ module testbench();
 		$finish;
 	end
 endmodule
-
-
-
