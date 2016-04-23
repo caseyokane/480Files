@@ -1,10 +1,5 @@
-%   Casey O'kane - casey.okane@uky.edu
-%   Joe Weisbrod - jtwe226@uky.edu
-%   Tristan Cheam - tlcheam01@uky.edu
-%   EE480 - Assignment 3: A Faster IDIOT
-%   note.tex : Implementor's Note
-%   Version:
-%       02-14-2016 : initial
+%   EE480 - Assignment 4: Floating
+%   note.tex : Implementor's Notes
 
 
 \documentclass[conference]{IEEEtran}
@@ -14,64 +9,42 @@
 \usepackage{adjustbox}
 
 \begin{document}
-\title{Assignment 3: A Faster IDIOT\\Implementor's Notes}
-\author{\IEEEauthorblockN{Casey O'Kane}
+\title{Assignment 4: Floating\\Implementor's Notes}
+\author{\IEEEauthorblockN{Abu-Taha Abdulfattah}
+        \IEEEauthorblockA{tat\_489@hotmail.com}
+        \IEEEauthorblockN{Casey O'kane }
         \IEEEauthorblockA{casey.okane@uky.edu}
-        \IEEEauthorblockN{Joe Weisbrod}
-        \IEEEauthorblockA{jtwe226@uky.edu}
-        \IEEEauthorblockN{Tristan Cheam}
-        \IEEEauthorblockA{tlcheam01@uky.edu}}
+        \IEEEauthorblockN{LiangLiang Zheng}
+        \IEEEauthorblockA{lzh229@g.uky.edu}}
 
 \maketitle
 
 \begin{abstract}
-The goal of this assignment involved implementing the pipelined version of 
-the IDIOT instruction set using the AIK assembler, the Verilog Hardware
-Design Language and detailed test plan to exhaustively test the different 
-components and logic of the design. 
+The goal of this assignment involved implementing the floating point based
+instructions of the IDIOT instruction set. The newly adapted ALU was then
+interfaced with the provided pipeline solution and a series of tests were created
+to ensure module and interface correctness.
 \end{abstract}
 
 \section{General Approach}
-Following the approach of previous assignments, the implementation of this 
-assignment closely followed a heavily modulated design. Both the data and 
-instruction memories where treated as modules along with the ALU incrementor,
-ALU module (for ALU instructions), the dependency detection module, the 
-register file and the processor itself. 
-
-Similar to the previous assignment, global constants were declared both to 
-represent common data structures (like 'WORD) and the different Opcode 
-signals that could be received by the processor (like 'OpAdd or any of the 
-instructions specified by the IDIOT ISA). Also, the AIK specification IDIOT\_SPEC
-provided by Dr. Dietz following the submission of Assignment 2 was used
-for the sake of consistency.
-
-The main point of difference for this assignment is the addition of the three
-buffer modules that are used to share information between modules of the 
-different cycles (Instruction Fetch, Register Read, ALU/Memory, Register
-Write). These buffers are used to implement the pipelined design and their 
-implementations are described in the next section.
-
-While there are still some incomplete aspects of this assignment (these issues 
-are discussed in the \textbf{Issues} section of these notes), the most recent 
-diagram is shown in \textbf{Appendix A} at the end of these notes. 
+Include general approach here
 
 %%%%%%%%%%%%%%%%%%%%
 \section{Implementation}
-This section describes how each module was implemented.
+This section describes how each instruction was implemented.
 
-\subsection{Pipeline Buffers}
-\subsubsection{Instruction Buffer}
+\subsection{Pipeline Solution}
 
-\subsubsection{Register Buffer}
+\subsection{Floating Point Instructions}
+\subsubsection{Integer to Float}
 
-\subsubsection{ALU/Write Buffer}
+\subsubsection{Float to Integer}
 
-\subsection{Proccesor}
+\subsubsection{Float Addition}
 
-\subsection{Memory}
-\subsubsection{Instruction Memory}
+\subsubsection{Float Multiply}
 
-\subsubsection{Data Memory}
+\subsubsection{Float Inverse}
 
 %%%%%%%%%%%%%%%%%%%%%%
 
@@ -84,15 +57,7 @@ This section describes how each module was implemented.
 %%%%%%%%%%%%%%%%%%%%%%%
 \section{Issues}
 \subsection{Features Not implemented}
-\subsubsection{Jump Based Instructions}
-Currently, there is no implementation concerning Jump based instructions JZ/SZ/SYS. 
-Hopefully this is something that will change prior to submission. 
-\subsubsection{Memory based instruction}
-There is no implementation of Load or store 
-\subsubsection{Load Immediate Instruction} 
-As the group was unable to account for the jump or memory based instructions until far later 
-than anticipated, the group was unable to complete li instruction handling for the pipelined
-processor. 
+
 
 \subsection{Known Errors}
 As it currently stands there are no known issues
