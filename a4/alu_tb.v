@@ -1,3 +1,6 @@
+`timescale 1ns/1ps
+
+
 module alu_tb;
     function disp;
     input x,y,z;
@@ -11,16 +14,16 @@ module alu_tb;
     reg `WORD Y;
     reg `WORD Z;
     wire `WORD z;
-    reg [2:0] ALUop;
+    reg [4:0] ALUop;
     
     reg `WORD Xvector[0:20];
     reg `WORD Yvector[0:20];
     reg `WORD Zvector[0:20];
-    reg [2:0] OpVector[0:20];
+    reg [4:0] OpVector[0:20];
 
     integer test_num, test_num_max;
 
-    alu aluuut(X,Y,ALUop,z);
+    alu aluuut(z, ALUop, X, Y);
 
     integer correct, failed;
     reg `WORD calc;
@@ -40,7 +43,7 @@ module alu_tb;
         $readmemh("tests/aluZVector.vmem", Zvector);
         $readmemb("tests/aluOpVector.vmem", OpVector);
 
-        for (test_num = 0; test_num < test_num_max; test_num += 1) begin
+        for(test_num = 0; test_num < test_num_max; test_num = test_num + 1) begin
             X <= Xvector[test_num];
             Y <= Yvector[test_num];
             ALUop <= OpVector[test_num];
@@ -49,9 +52,9 @@ module alu_tb;
             $display("%d %d %d", X, Y, Z);
             if (Zvector[test_num] != Z) begin
                 $display("Failure test %d", test_num);
-                failed += 1;
+                failed = failed + 1;
             end else begin
-                correct += 1;
+                correct = correct + 1;
             end
         end
 

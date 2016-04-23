@@ -19,7 +19,7 @@
 `define OPf2i	4'b1010
 `define OPi2f	4'b1011
 
-alu(result, op, in1, in2);
+module alu(result, op, in1, in2);
 
 output reg `WORD result;
 input wire `OP op;
@@ -33,8 +33,12 @@ always @(*) begin
     `OPor: begin result = in1 | in2; end
     `OPshr: begin result = in1 >> 1; end
     `OPxor: begin result = in1 ^ in2; end
-    'OPf2i: begin end
-    'OPi2f: begin end
+    //Floating point operations - Currently Under construction
+    `OPf2i: begin end
+    `OPi2f: begin end
+    `OPinvf: begin end
+    `OPaddf: begin end
+    `OPmulf: begin end
     default: begin result = in1; end
   endcase
 end
