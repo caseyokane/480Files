@@ -24,7 +24,7 @@
 //Provide a 16 bit floating point number and receive the number of 0s
 module lead0s(d, s);
 
-input wire[15:0] s;
+input wire `WORD  s;
 output reg[4:0] d; 
 reg[7:0] s8; reg[3:0] s4; reg[1:0] s2;
 
@@ -47,15 +47,12 @@ input wire `OP op;
 input wire `WORD in1, in2;
 
 //Added variables
-reg[1:0] signBit;
-reg[7:0] decodedExp; 
-reg[7:0] expVal; 
-reg[6:0]trail;
-reg[7:0]trailSignif; 
+reg `WORD tempResult; 
+reg[23:0] valueNew;
+reg signBit; reg[7:0] expVal; reg[6:0] mantissa;  
 wire[4:0] numZero; 
 
 //Instantiate the module to find the number of zeros 
-//TODO: Should I shift in1, so that it takes the trailing significand instead
 lead0s findZeros(numZero, in1);
 
 always @(*) begin
@@ -69,51 +66,41 @@ always @(*) begin
     //Floating point operations - Currently Under construction
 
     `OPf2i: begin
-      //TODO: Issues 
-      /*Get the exponent value
-      currExp = in1[14:7];
+      //Get the exponent value
       //Subtract 127 from exponent
-      expVal = currExp - 127;
       //Shift fraction right by exponent value
-      shrFrac = in1[7:0] >> expVal; 
       //normalize using leading 0s 
       //account for sign
-      result =  shrFrac >> numZero;
-      */
+
+      //looking for positve/negative/zero. Create three distinct cases 
      end
 
     `OPi2f: begin 
-      //Make positive, set sign
-      signBit = in1[15];
+
+      //Make positive, set sign :
       //If in1[15] then it's negative, so subtract num by 0x8000 to get pos val
-      if(in1[15] ==1) begin
-        in1 = in1 - 0x8000;
+      if(in1[15]) begin
+        signBit =1; 
+        tempResult = 0 - in1;
       end 
-      
-      //Take the exponent and place into register
-      expVal = in1[14:7];
-      //Calculate the exponent value for the formula, with 127 bias and 8 precision
-      decodedExp = expVal - 127 - 7;
-
-      //set exponent to normalize result
-      //once the significand is normalized, assign it to the specified register
-      if(in1[6] ==1) begin
-        trail = in1[6:0];
-      end
-      //If the most signficant bit isn't normalized, shift it based on the num 
       else begin
-        //TODO: Shifting by a wire?
-        //trail = in1[6:0] >> numZeros;
+        signBit = 0;
+        tempResult = in1;
       end
 
-      //Construct the significant trail
-      trailSignif = {1'b1, trail};
-
-      //$display("2**%x == %x\n", decodedExp, (2**decodedExp));
-      $display("Decoded: %d, Result: %d", decodedExp,  2**decodedExp);
-      //Use the provided formula to actually calculate the floating point result
-      //TODO: Getting a 0 here? Assuming it has something to do with decodedExp 
-      result = ( ((-1)**signBit) * (2**decodedExp) * (trailSignif));
+      //count leading zeros
+      //Assign value to a 24 bit buffer and padde with zeros
+      valueNew = {tempResult, 8'b0};
+      
+      //Make a mantissa
+      mantissa = valueNew[((15-numZero)+8) -: 7];
+    
+      //Figure out exponent
+      expVal = (16'h7f + 15) - numZero;
+      //$display("numZero: %d", numZero);
+      //cat all these parts together
+      result = {signBit, expVal, mantissa};
+      //$display(mantissa);
      end
 
     `OPinvf: begin end

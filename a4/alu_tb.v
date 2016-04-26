@@ -15,12 +15,18 @@ module alu_tb;
     reg `WORD Z;
     wire `WORD z;
     reg [4:0] ALUop;
-    
+   
+/* 
     reg `WORD Xvector[0:20];
     reg `WORD Yvector[0:20];
     reg `WORD Zvector[0:20];
     reg [4:0] OpVector[0:20];
-
+*/
+    reg `WORD Xvector[0:1];
+    reg `WORD Yvector[0:1];
+    reg `WORD Zvector[0:1];
+    reg [4:0] OpVector[0:1];
+    
     integer test_num, test_num_max;
 
     alu aluuut(z, ALUop, X, Y);
@@ -43,7 +49,9 @@ module alu_tb;
         $readmemh("tests/aluZVector.vmem", Zvector);
         $readmemb("tests/aluOpVector.vmem", OpVector);
 
-        for(test_num = 0; test_num < test_num_max; test_num = test_num + 1) begin
+
+        //for(test_num = 0; test_num < test_num_max; test_num = test_num + 1) begin
+        for(test_num = 0; test_num < 1; test_num = test_num + 1) begin
             X <= Xvector[test_num];
             Y <= Yvector[test_num];
             ALUop <= OpVector[test_num];
