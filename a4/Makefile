@@ -5,7 +5,7 @@ WAVEVIEWER = gtkwave
 MODULES=alu.v
 COMPILED=dsn
 TESTS=alu_tb.v
-SIMS=alu_tb.vcd
+SIMS=results.vcd
 
 all: $(SIMS)
 

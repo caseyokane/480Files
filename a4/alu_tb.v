@@ -41,7 +41,7 @@ module alu_tb;
 
         X = 0;
         Y = 0;
-        $dumpfile("alu_tb.vcd");
+        $dumpfile("results.vcd");
         $dumpvars(0, alu_tb);
         
         $readmemh("tests/aluXVector.vmem", Xvector);
