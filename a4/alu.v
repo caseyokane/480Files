@@ -47,13 +47,28 @@ input wire `OP op;
 input wire `WORD in1, in2;
 
 //Added variables
-reg `WORD tempResult; 
+reg `WORD absValue; reg `WORD tempResult; 
 reg[23:0] valueNew;
 reg signBit; reg[7:0] expVal; reg[6:0] mantissa;  
 wire[4:0] numZero; 
 
-//Instantiate the module to find the number of zeros 
-lead0s findZeros(numZero, in1);
+//TODO: Write up as a notable workaroud
+//Always block that determines if the input is positive or negative
+always@(*) begin
+
+  if(in1[15]) begin
+    absValue <= ~in1 +1;
+  end
+  else begin
+    absValue <= in1;
+  end
+
+end
+
+
+//lead0s findZeros(numZero, in1);
+//Find the number of leading zeros for the absolute value of input
+lead0s findZeros(numZero, absValue);
 
 always @(*) begin
   case (op)
@@ -76,16 +91,17 @@ always @(*) begin
      end
 
     `OPi2f: begin 
-
       //Make positive, set sign :
       //If in1[15] then it's negative, so subtract num by 0x8000 to get pos val
       if(in1[15]) begin
         signBit =1; 
-        tempResult = in1 - 16'h8000;
+        //tempResult = ~in1 +1;
+        tempResult = absValue;
       end 
       else begin
         signBit = 0;
-        tempResult = in1;
+        //tempResult = in1;
+        tempResult = absValue;
       end
 
       //Assign value to a 24 bit buffer and pad with zeros
