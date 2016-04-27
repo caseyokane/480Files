@@ -81,26 +81,22 @@ always @(*) begin
       //If in1[15] then it's negative, so subtract num by 0x8000 to get pos val
       if(in1[15]) begin
         signBit =1; 
-        tempResult = 0 - in1;
+        tempResult = in1 - 16'h8000;
       end 
       else begin
         signBit = 0;
         tempResult = in1;
       end
 
-      //count leading zeros
-      //Assign value to a 24 bit buffer and padde with zeros
+      //Assign value to a 24 bit buffer and pad with zeros
       valueNew = {tempResult, 8'b0};
-      
-      //Make a mantissa
-      mantissa = valueNew[((15-numZero)+8) -: 7];
-    
-      //Figure out exponent
+      //Make a mantissa by indexing the buffer at 15-numzero +7 and 15-numzero
+      mantissa = valueNew[((15-numZero)+7) -: 7];
+      //mantissa = valueNew[((15-numZero)+8) -: 7];
+      //Figure out exponent which is 142 - #zeros 
       expVal = (16'h7f + 15) - numZero;
-      //$display("numZero: %d", numZero);
       //cat all these parts together
       result = {signBit, expVal, mantissa};
-      //$display(mantissa);
      end
 
     `OPinvf: begin end
