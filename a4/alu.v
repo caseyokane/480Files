@@ -51,6 +51,12 @@ reg `WORD absValue; reg `WORD tempResult;
 reg[23:0] valueNew;
 reg signBit; reg[7:0] expVal; reg[6:0] mantissa;  
 wire[4:0] numZero; 
+reg [6:0] lookupArr [0:127];
+
+//Initialize the lookup array
+initial begin
+   $readmemh("reqFiles/recip.vmem", lookupArr);
+end
 
 //TODO: Write up as a notable workaroud
 //Always block that determines if the input is positive or negative
@@ -91,6 +97,9 @@ always @(*) begin
      end
 
     `OPi2f: begin 
+//TODO: How should ints be passed to i2f? 1.5 is 0x3fc0 after conversion 
+//but what about before? 
+
       //Make positive, set sign :
       //If in1[15] then it's negative, so subtract num by 0x8000 to get pos val
       if(in1[15]) begin
@@ -115,7 +124,17 @@ always @(*) begin
       result = {signBit, expVal, mantissa};
      end
 
-    `OPinvf: begin end
+    `OPinvf: begin 
+      //First set the sign bit like the other operations 
+      //To find the mantissa, use a lookup table
+      //TODO: Do this here or in testbench?
+      //$display("element: %d, value: %x", in1[6:0], lookupArr[in1[6:0]][6:0]); 
+      //$display(lookupArr);
+      //Read the table into a 127 element array 
+      //Finally, Need to determine the exponent based on the mantissa value
+      result = in1;
+     end
+    
     `OPaddf: begin end
     `OPmulf: begin end
     default: begin result = in1; end
