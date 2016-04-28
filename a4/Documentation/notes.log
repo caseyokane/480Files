@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015) (preloaded format=pdflatex 2015.5.24)  22 APR 2016 22:44
+This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015) (preloaded format=pdflatex 2015.5.24)  27 APR 2016 21:01
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -288,6 +288,11 @@ G,.JBIG2,.JB2,.eps]
 File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Liv
 e
 ))
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <7> on input line 47.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <5> on input line 47.
+
 
 ** Conference Paper **
 Before submitting the final camera ready copy, remember to:
@@ -302,26 +307,28 @@ Before submitting the final camera ready copy, remember to:
 [1{/usr/local/texlive/2015/texmf-var/fonts/map/pdftex/updmap/pdftex.map}
 
 
-
 ]
 (./notes.aux) ) 
 Here is how much of TeX's memory you used:
- 3110 strings out of 493089
- 51184 string characters out of 6134842
- 116751 words of memory out of 5000000
- 6563 multiletter control sequences out of 15000+600000
- 33007 words of font info for 62 fonts, out of 8000000 for 9000
+ 3113 strings out of 493089
+ 51218 string characters out of 6134842
+ 119751 words of memory out of 5000000
+ 6565 multiletter control sequences out of 15000+600000
+ 34114 words of font info for 63 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  38i,7n,35p,235b,236s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/local/texlive/2015/texmf-dist/fonts/enc/dvips/base/8r.enc}
-</usr/local/texlive/2015/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/loca
-l/texlive/2015/texmf-dist/fonts/type1/urw/times/utmbi8a.pfb></usr/local/texlive
-/2015/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/local/texlive/2015/texm
-f-dist/fonts/type1/urw/times/utmri8a.pfb>
-Output written on notes.pdf (1 page, 47482 bytes).
+</usr/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb><
+/usr/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></u
+sr/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></us
+r/local/texlive/2015/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/local/te
+xlive/2015/texmf-dist/fonts/type1/urw/times/utmbi8a.pfb></usr/local/texlive/201
+5/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/local/texlive/2015/texmf-di
+st/fonts/type1/urw/times/utmri8a.pfb>
+Output written on notes.pdf (1 page, 77861 bytes).
 PDF statistics:
- 25 PDF objects out of 1000 (max. 8388607)
- 17 compressed objects within 1 object stream
+ 37 PDF objects out of 1000 (max. 8388607)
+ 26 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
  1 words of extra memory for PDF output out of 10000 (max. 10000000)
 

@@ -27,7 +27,11 @@ to ensure module and interface correctness.
 \end{abstract}
 
 \section{General Approach}
-Include general approach here
+Similar to the approach suggested by Dr. Dietz in the assignment prompt, the ALU
+received most of the group's early attention. First, the floating point instructions were 
+implemented using the ALU module of the provided \textbf{pipe.v} file. Then after integrating
+this ALU with floating point this ALU was then placed inside of the \textbf{pipe.v} file and a 
+few changes were made to account for the floating point instructions.  
 
 %%%%%%%%%%%%%%%%%%%%
 \section{Implementation}
@@ -37,6 +41,13 @@ This section describes how each instruction was implemented.
 
 \subsection{Floating Point Instructions}
 \subsubsection{Integer to Float}
+For integer to float, the sign bit is first determined and stored in the signBit register. After 
+finding the sign, the mantissa is constructed by creating a buffer of 24 bits, which contains
+the absolute value of the input with 8 bits of zero.The mantissa is constructed in the slice 
+of the buffer contained from \(15-numZero +7\) to \(15-numZero\) to account for offset.
+After the mantissa, the exponent is found by adding the hexadecimal value \textit{0x7f} to 15, 
+which is then subtracted by the number of zeros. After all of these individual portions are 
+collected, they are concatenated together to form the resulting floating point value. 
 
 \subsubsection{Float to Integer}
 
@@ -56,10 +67,35 @@ This section describes how each instruction was implemented.
 
 %%%%%%%%%%%%%%%%%%%%%%%
 \section{Issues}
+\subsection{Notable Workarounds}
+\subsubsection{Negative Number Leading Zeros Block}
+One issue that the group experienced involved finding the leading zeros for numbers that were 
+negative. To combat this, an always block was utilized before the leading zeros module was instantiated
+so that if the number was negative, that the its positive sign binary representation would have been
+used to find the number of leading zeros. This was placed in an always block as checking for the sign bit later 
+(inside the instruction implementation) since the \textbf{lead0s} module could not be instantiated inside
+the always block where the instructions are handled. 
+
+
+
 \subsection{Features Not implemented}
 
 
 \subsection{Known Errors}
 As it currently stands there are no known issues
+
+
+%%%%%%%%%%%%%%%%%%%%%%%
+\section{Theory}
+"Are these operations, plus the integer operations, sufficient to cover most floating-point needs or is there stuff missing? 
+For example, there are no floating-point compare instructions here... is that really reasonable?"
+
+"Are these operations necessary? How much harder would it have been to implement these floating-point operations 
+using just the integer instructions? Is there a real performance payoff?"
+
+"Would it have been more or less useful if you implemented the IEEE standard binary16 format (which has a 4-bit exponent) 
+instead of implementing the "top half" of binary32?"
+
+%%%%%%%%%%%%%%%%%%%%%%%
 
 \end{document}
