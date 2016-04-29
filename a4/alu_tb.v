@@ -43,7 +43,7 @@ module alu_tb;
         $readmemh("tests/aluZVector.vmem", Zvector);
         $readmemb("tests/aluOpVector.vmem", OpVector);
 
-        $display("OP   :X    :Y    :Z    :Expected\n");
+        $display("OP   :X    :Y    :Z    :Expected");
         for(test_num = 0; test_num < test_num_max; test_num = test_num + 1) begin
             X <= Xvector[test_num];
             Y <= Yvector[test_num];
