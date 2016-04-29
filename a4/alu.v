@@ -51,7 +51,7 @@ reg `WORD absValue; reg `WORD tempResult;
 reg[23:0] valueNew;
 reg signBit; reg[7:0] expVal; reg[6:0] mantissa;  
 wire[4:0] numZero; 
-reg [6:0] lookupArr [0:127];
+reg [7:0] lookupArr [0:127];
 
 //Initialize the lookup array
 initial begin
@@ -126,13 +126,37 @@ always @(*) begin
 
     `OPinvf: begin 
       //First set the sign bit like the other operations 
+      if(in1[15]) begin
+        signBit=1;
+        tempResult = absValue;
+      end
+      else begin
+        signBit=0;
+        tempResult = absValue;
+      end 
+
       //To find the mantissa, use a lookup table
-      //TODO: Do this here or in testbench?
-      //$display("element: %d, value: %x", in1[6:0], lookupArr[in1[6:0]][6:0]); 
-      //$display(lookupArr);
+      mantissa = lookupArr[absValue[6:0]][7:0];
+      //$display("lookupValue: %x", lookupArr[2][7:0]);
       //Read the table into a 127 element array 
-      //Finally, Need to determine the exponent based on the mantissa value
-      result = in1;
+
+      //Need to determine the exponent based on the mantissa value
+      if(!mantissa) begin 
+        expVal = 254 - absValue[14:7];
+      end
+      else begin
+        expVal = 253 - absValue[14:7];
+      end
+
+      //Finally, we set the result of the inverse based on whether the input
+      //was 0 or not. For this assignment, we treat 1/0 as 0. 
+      if(!absValue)begin
+        result = 0;
+      end 
+      else begin
+        result = {signBit, expVal, mantissa};
+      end
+
      end
     
     `OPaddf: begin end
