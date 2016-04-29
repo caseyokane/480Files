@@ -1,4 +1,4 @@
-// basic sizes of things
+e/ basic sizes of things
 `define WORD	[15:0]
 `define OP	[4:0]
 `define Opcode	[15:12]
