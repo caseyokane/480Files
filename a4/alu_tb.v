@@ -31,7 +31,7 @@ module alu_tb;
     initial begin
         correct = 0;
         failed = 0;
-        test_num_max = 3;
+        test_num_max = 6;
 
         X = 0;
         Y = 0;
@@ -43,14 +43,14 @@ module alu_tb;
         $readmemh("tests/aluZVector.vmem", Zvector);
         $readmemb("tests/aluOpVector.vmem", OpVector);
 
-        $display("OP  :  X  :  Y  :  Z  :  Expected\n");
+        $display("OP   :X    :Y    :Z    :Expected\n");
         for(test_num = 0; test_num < test_num_max; test_num = test_num + 1) begin
             X <= Xvector[test_num];
             Y <= Yvector[test_num];
             ALUop <= OpVector[test_num];
             #2;
 
-            $display("%b  : %x  :  %x  :  %x  :  %x", ALUop, X, Y, Z, Zvector[test_num]);
+            $display("%b: %x: %x: %x: %x", ALUop, X, Y, Z, Zvector[test_num]);
             if (Zvector[test_num] != Z) begin
                 $display("Failure test %d", test_num);
                 failed = failed + 1;
