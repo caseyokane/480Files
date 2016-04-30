@@ -56,6 +56,17 @@ collected, they are concatenated together to form the resulting floating point v
 \subsubsection{Float Multiply}
 
 \subsubsection{Float Inverse}
+After a numerous algorithms were provided by Dr. Dietz, the implementation for the 
+inverse float operation was finally settled after all proposed solutions were presented
+and it was decided that the ideal tactic would involve the use of a lookup 
+table \textbf{reqFiles/recip.vmem}. After finding the sign bit, the reciprocal value of the mantissa
+is found by indexing the lookup table at the mantissa address. After the mantissa is collected
+the exponent is found by finding the difference between 254 and the value of input exponent (if 
+the mantissa is equal to zero), if the mantissa bits do not result in the value zero however, the 
+result must be shifted and the difference between 253 is used to record the exponent value.
+Finally, after all of the components have been constructed, the sign, exponent and mantissa
+are concatenated together to form the inverse result. 
+ 
 
 %%%%%%%%%%%%%%%%%%%%%%
 
