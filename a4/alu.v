@@ -92,7 +92,11 @@ always @(*) begin
       //normalize using leading 0s 
       //account for sign
 
-      //looking for positve/negative/zero. Create three distinct cases 
+      //if exponent < 7, then the result is equal to 0
+      //else if exponent >7, result is -126 (min) or 127 (max)
+      //else if exponent >0, result is mantissa <<exponent;
+      //else result is mantissa >> -exponent
+
      end
 
     `OPi2f: begin 
@@ -158,8 +162,24 @@ always @(*) begin
 
      end
     
-    `OPaddf: begin end
-    `OPmulf: begin end
+    `OPaddf: begin 
+      //find the difference between the larger and smaller input
+      //Shift the samller mantissa by this difference
+      //Add mantissas
+      //Normalize (shifting by 1 and adding 1 to the exponent)
+      //Look at overflow/underflow and set to the max/min based on case
+     end
+
+    `OPmulf: begin 
+      //Append 1 as top bit for both mantissas
+      //Multiply these new mantissas
+      //Mantissa = new mantissa[13:6]
+      //Get the sign bit 
+      //Get the exponent as = (Ea -Ebias) + (Eb -Ebias) + Ebias +Esign
+      //Get the exponent as = Ea + Eb - Ebias + En
+      //Concatenate all values together
+     end
+
     default: begin result = in1; end
   endcase
 end
