@@ -1,4 +1,4 @@
-e/ basic sizes of things
+// basic sizes of things
 `define WORD	[15:0]
 `define OP	[4:0]
 `define Opcode	[15:12]
@@ -101,13 +101,57 @@ always @(*) begin
       //Shift fraction right by exponent value
       //normalize using leading 0s 
       //account for sign
+     
+
+      //New Code:
+
+      /*Abdul's Pseudo 
+      if(in1[15]) begin
+        signBit = 1; 
+      end 
+      else begin
+        signBit = 0;
+      end
+
+      expVal = in1[14:7];
 
       //if exponent < 7, then the result is equal to 0
+      if(expVal < 7) begin
+        result = 0; 
+      end 
+     
       //else if exponent >7, result is -126 (min) or 127 (max)
-      //else if exponent >0, result is mantissa <<exponent;
-      //else result is mantissa >> -exponent
+      else if(expVal > 7) begin
+        result = ((signBit) ? -126 : 127);
+        $display("Sign: %b, Result: %x", signBit, result); 
 
-      //Liang's Code:
+        //based on the minimum or maximum received, use a barrell shifter 
+        //to find the result 
+        if(expVal >0) begin
+          $display("expVal > 0, expVal = %x", expVal);
+          result = result << expVal;
+        end
+
+        else begin
+          result = result >> expVal;
+        end
+
+      end       
+     
+
+      else if exponent >0, result is mantissa <<exponent;
+      else if(expVal > 0) begin
+        $display("expVal > 0, expVal = %x"
+        result = result << expVal;
+      end 
+
+      //else result is mantissa >> -exponent
+      else begin
+        result = result >> expVal;
+      end
+      */
+
+      /*Liang's Code:
       if (in1[15]) begin
         signBit = 1;
         tempResult = 16'h8000;
@@ -136,7 +180,7 @@ always @(*) begin
         begin
           tempResult[0] <= 1'b0;
         end
-
+      */
      end
 
     `OPi2f: begin 
@@ -217,7 +261,7 @@ always @(*) begin
       //Get the exponent as = Ea + Eb - Ebias + En
       //Concatenate all values together
 
-      //Liang's Code:
+      /*Liang's Code:
       
       signBit = in1[15]^in2[15];
       
@@ -242,6 +286,7 @@ always @(*) begin
       expVal = expVal1 + expVal2 + temexpVal - 8'b01111111;
 
       result = {signBit,expVal,mantissa};
+      */
      end
 
     default: begin result = in1; end
