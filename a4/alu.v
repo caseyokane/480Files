@@ -104,6 +104,30 @@ always @(*) begin
      
 
       //New Code:
+      
+      //Check initial case that input is 0
+      if(!in1) begin
+        result = in1;
+      end
+
+      else begin
+        //Create a buffer of 1's followed by the mantissa 
+        valueNew= {8'b1, in1[6:0]};
+
+        if(in1[14:7] < 127) begin
+          valueNew = valueNew << (in1[14:7] -127)
+          result = temp[22:7]
+        end
+
+        else begin
+          result = 0;
+        end
+
+        if(in1[15]) begin
+          result = (result ^ 'hffff) +1;
+        end
+
+      end
 
       /*Abdul's Pseudo 
       if(in1[15]) begin
