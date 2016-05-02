@@ -53,6 +53,16 @@ reg signBit; reg[7:0] expVal; reg[6:0] mantissa;
 wire[4:0] numZero; 
 reg [7:0] lookupArr [0:127];
 
+//Liang's Variables 
+//For F2I
+reg `WORD temV;
+reg `WORD temVs;
+//For Mulf
+reg[7:0] expVal1; reg[7:0] expVal2; reg[7:0] temexpVal;
+reg[7:0] tem1; reg[7:0] tem2;
+
+
+
 //Initialize the lookup array
 initial begin
    $readmemh("reqFiles/recip.vmem", lookupArr);
@@ -83,8 +93,8 @@ always @(*) begin
     `OPor: begin result = in1 | in2; end
     `OPshr: begin result = in1 >> 1; end
     `OPxor: begin result = in1 ^ in2; end
-    //Floating point operations - Currently Under construction
-
+    
+    //Floating point operations
     `OPf2i: begin
       //Get the exponent value
       //Subtract 127 from exponent
@@ -97,11 +107,39 @@ always @(*) begin
       //else if exponent >0, result is mantissa <<exponent;
       //else result is mantissa >> -exponent
 
+      //Liang's Code:
+      if (in1[15]) begin
+        signBit = 1;
+        tempResult = 16'h8000;
+        end
+      else 
+      begin
+        signBit = 0;
+        tempResult = 16'h0; 
+      end
+        expVal[7:0] <= in1[14:7];
+        if((expVal - 127)>0)
+        begin
+          temV[7] = 1'b1;
+          temV[6:0] <= in1[7:0];
+          int i;
+          for(i=0, i<(expVal-126), i++)
+          begin
+            tempResult[i] <= temV[7-(expVal-127)+i];
+          end
+        end
+        else if((expVal - 127)==0)
+        begin
+          tempResult[0] <= 1'b1;
+        end
+        else
+        begin
+          tempResult[0] <= 1'b0;
+        end
+
      end
 
     `OPi2f: begin 
-//TODO: How should ints be passed to i2f? 1.5 is 0x3fc0 after conversion 
-//but what about before? 
 
       //Make positive, set sign :
       //If in1[15] then it's negative, so subtract num by 0x8000 to get pos val
@@ -178,6 +216,32 @@ always @(*) begin
       //Get the exponent as = (Ea -Ebias) + (Eb -Ebias) + Ebias +Esign
       //Get the exponent as = Ea + Eb - Ebias + En
       //Concatenate all values together
+
+      //Liang's Code:
+      
+      signBit = in1[15]^in2[15];
+      
+      tem1 = {1'b1,in1[6:0]};
+      tem2 = {1'b1,in1[6:0]};
+      
+      temV = tem1*tem2;
+      
+      expVal1[7:0] = in1[14:7];
+      expVal2[7:0] = in2[14:7];
+      
+      if(temV[15])begin 
+        emexpVal = 8'b00000001; 
+        mantissa[6:0] = temv[14:8];
+      end
+      
+      else begin 
+        temexpVal = 8'b0; 
+        mantissa[6:0] = temv[13:7]; 
+      end
+      
+      expVal = expVal1 + expVal2 + temexpVal - 8'b01111111;
+
+      result = {signBit,expVal,mantissa};
      end
 
     default: begin result = in1; end
