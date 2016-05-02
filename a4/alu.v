@@ -191,38 +191,50 @@ always @(*) begin
      end
 
     `OPmulf: begin 
-      //Append 1 as top bit for both mantissas
-      //Multiply these new mantissas
-      //Mantissa = new mantissa[13:6]
       //Get the sign bit 
       //Get the exponent as = (Ea -Ebias) + (Eb -Ebias) + Ebias +Esign
       //Get the exponent as = Ea + Eb - Ebias + En
-      //Concatenate all values together
 
-      //Liang's Code:
       
+      //find the sign by xoring signs of each input   
       signBit = in1[15]^in2[15];
       
+      //Append 1 as top bit for both mantissas
       tem1 = {1'b1,in1[6:0]};
       tem2 = {1'b1,in1[6:0]};
       
+  
+      //Multiply these new mantissas
       temV = tem1*tem2;
+     
+      //Get the exponent values for the inputs 
+      expVal1 = in1[14:7];
+      expVal2 = in2[14:7];
       
-      expVal1[7:0] = in1[14:7];
-      expVal2[7:0] = in2[14:7];
-      
+      /*
+      //Mantissa = new mantissa[13:6]
       if(temV[15])begin 
-        temexpVal = 8'b00000001; 
-        mantissa[6:0] = temV[14:8];
+        temexpVal = 1; 
+        mantissa[6:0] = temV[13:6];
+        //mantissa[6:0] = temV[14:8];
       end
       
       else begin 
-        temexpVal = 8'b0; 
-        mantissa[6:0] = temV[13:7]; 
+        temexpVal = 0; 
+        mantissa[6:0] = temV[13:6]; 
+        //mantissa[6:0] = temV[13:7]; 
       end
-      
-      expVal = expVal1 + expVal2 + temexpVal - 8'b01111111;
+      */
 
+      //mantissa = new mantissa
+      mantissa = temV[13:6];
+      
+      //add the exponents together and subtract the bias value
+      //expVal = expVal1 + expVal2 + temexpVal - 127;
+      expVal = expVal1 + expVal2 - 127;
+
+      
+      //Concatenate all values together
       result = {signBit,expVal,mantissa};
       
      end
