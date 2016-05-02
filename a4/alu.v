@@ -53,10 +53,6 @@ reg signBit; reg[7:0] expVal; reg[6:0] mantissa;
 wire[4:0] numZero; 
 reg [7:0] lookupArr [0:127];
 
-//Liang's Variables 
-//For F2I
-reg `WORD temV;
-reg `WORD temVs;
 //For Mulf
 reg[7:0] expVal1; reg[7:0] expVal2; reg[7:0] temexpVal;
 reg[7:0] tem1; reg[7:0] tem2;
@@ -96,115 +92,37 @@ always @(*) begin
     
     //Floating point operations
     `OPf2i: begin
-      //Get the exponent value
-      //Subtract 127 from exponent
-      //Shift fraction right by exponent value
-      //normalize using leading 0s 
-      //account for sign
-     
-
-      //New Code:
       
       //Check initial case that input is 0
       if(!in1) begin
         result = in1;
       end
 
+      //If not zero, continue 
       else begin
         //Create a buffer of 1's followed by the mantissa 
-        valueNew= {8'b1, in1[6:0]};
+        valueNew= {16'b1, in1[6:0]};
 
-        if(in1[14:7] < 127) begin
-          valueNew = valueNew << (in1[14:7] -127)
-          result = temp[22:7]
+        //Check that the exponent value is positive (>=127)
+        if(in1[14:7] >= 127) begin
+
+          //Get the exponent value and subtract 127
+          expVal = in1[14:7] - 127;
+
+          //Shift using the exponent value with an offset of 1 to account for 
+          //mantissa length
+          valueNew = valueNew << (expVal +1);
+
+          //set the result to the 16 most significant bits 
+          result = valueNew[23:8];
         end
 
-        else begin
-          result = 0;
-        end
-
+        //If the number is negative, take the 2's complement of the result 
         if(in1[15]) begin
-          result = (result ^ 'hffff) +1;
+          result = ~result +1;
         end
 
       end
-
-      /*Abdul's Pseudo 
-      if(in1[15]) begin
-        signBit = 1; 
-      end 
-      else begin
-        signBit = 0;
-      end
-
-      expVal = in1[14:7];
-
-      //if exponent < 7, then the result is equal to 0
-      if(expVal < 7) begin
-        result = 0; 
-      end 
-     
-      //else if exponent >7, result is -126 (min) or 127 (max)
-      else if(expVal > 7) begin
-        result = ((signBit) ? -126 : 127);
-        $display("Sign: %b, Result: %x", signBit, result); 
-
-        //based on the minimum or maximum received, use a barrell shifter 
-        //to find the result 
-        if(expVal >0) begin
-          $display("expVal > 0, expVal = %x", expVal);
-          result = result << expVal;
-        end
-
-        else begin
-          result = result >> expVal;
-        end
-
-      end       
-     
-
-      else if exponent >0, result is mantissa <<exponent;
-      else if(expVal > 0) begin
-        $display("expVal > 0, expVal = %x"
-        result = result << expVal;
-      end 
-
-      //else result is mantissa >> -exponent
-      else begin
-        result = result >> expVal;
-      end
-      */
-
-      /*Liang's Code:
-      if (in1[15]) begin
-        signBit = 1;
-        tempResult = 16'h8000;
-        end
-      else 
-      begin
-        signBit = 0;
-        tempResult = 16'h0; 
-      end
-        expVal[7:0] <= in1[14:7];
-        if((expVal - 127)>0)
-        begin
-          temV[7] = 1'b1;
-          temV[6:0] <= in1[7:0];
-          int i;
-          for(i=0, i<(expVal-126), i++)
-          begin
-            tempResult[i] <= temV[7-(expVal-127)+i];
-          end
-        end
-        else if((expVal - 127)==0)
-        begin
-          tempResult[0] <= 1'b1;
-        end
-        else
-        begin
-          tempResult[0] <= 1'b0;
-        end
-      */
      end
 
     `OPi2f: begin 
