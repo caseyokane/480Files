@@ -56,7 +56,7 @@ reg [7:0] lookupArr [0:127];
 //For Mulf
 reg[7:0] expVal1; reg[7:0] expVal2; reg[7:0] temexpVal;
 reg[7:0] tem1; reg[7:0] tem2;
-
+reg `WORD temV;
 
 
 //Initialize the lookup array
@@ -66,7 +66,6 @@ end
 
 
 //Always block that determines if the input is positive or negative and finds
-//
 always@(*) begin
 
   if(in1[15]) begin
@@ -105,14 +104,11 @@ always @(*) begin
 
         //Check that the exponent value is positive (>=127)
         if(in1[14:7] >= 127) begin
-
           //Get the exponent value and subtract 127
           expVal = in1[14:7] - 127;
-
           //Shift using the exponent value with an offset of 1 to account for 
           //mantissa length
           valueNew = valueNew << (expVal +1);
-
           //set the result to the 16 most significant bits 
           result = valueNew[23:8];
         end
@@ -203,7 +199,7 @@ always @(*) begin
       //Get the exponent as = Ea + Eb - Ebias + En
       //Concatenate all values together
 
-      /*Liang's Code:
+      //Liang's Code:
       
       signBit = in1[15]^in2[15];
       
@@ -216,19 +212,19 @@ always @(*) begin
       expVal2[7:0] = in2[14:7];
       
       if(temV[15])begin 
-        emexpVal = 8'b00000001; 
-        mantissa[6:0] = temv[14:8];
+        temexpVal = 8'b00000001; 
+        mantissa[6:0] = temV[14:8];
       end
       
       else begin 
         temexpVal = 8'b0; 
-        mantissa[6:0] = temv[13:7]; 
+        mantissa[6:0] = temV[13:7]; 
       end
       
       expVal = expVal1 + expVal2 + temexpVal - 8'b01111111;
 
       result = {signBit,expVal,mantissa};
-      */
+      
      end
 
     default: begin result = in1; end

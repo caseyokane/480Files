@@ -37,17 +37,18 @@ module alu_tb;
         Y = 0;
         $dumpfile("results.vcd");
         $dumpvars(0, alu_tb);
-        
+       
+        /* 
         $readmemh("tests/aluXVector.vmem", Xvector);
         $readmemh("tests/aluYVector.vmem", Yvector);
         $readmemh("tests/aluZVector.vmem", Zvector);
         $readmemb("tests/aluOpVector.vmem", OpVector);
-        /*
+        */
         $readmemh("tests/Xcurr.vmem", Xvector);
-        $readmemh("tests/aluYVector.vmem", Yvector);
+        $readmemh("tests/Ycurr.vmem", Yvector);
         $readmemh("tests/Zcurr.vmem", Zvector);
         $readmemb("tests/OPcurr.vmem", OpVector);
-        */
+        //
 
         $display("OP   :X    :Y    :Z    :Expected");
         for(test_num = 0; test_num < test_num_max; test_num = test_num + 1) begin
