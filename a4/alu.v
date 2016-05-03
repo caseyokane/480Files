@@ -100,7 +100,7 @@ always @(*) begin
       //If not zero, continue 
       else begin
         //Create a buffer of 1's followed by the mantissa 
-        valueNew= {16'b1, in1[6:0]};
+        valueNew= {16'hffff, in1[6:0]};
 
         //Check that the exponent value is positive (>=127)
         if(in1[14:7] >= 127) begin
@@ -226,7 +226,7 @@ always @(*) begin
       end
       */
 
-      //mantissa = new mantissa
+      //mantissa = new mantissa[13:6]
       mantissa = temV[13:6];
       
       //add the exponents together and subtract the bias value
