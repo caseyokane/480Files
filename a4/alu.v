@@ -100,7 +100,7 @@ always @(*) begin
       //If not zero, continue 
       else begin
         //Create a buffer of 1's followed by the mantissa 
-        valueNew= {16'hffff, in1[6:0]};
+        valueNew= {16'b1, in1[6:0]};
 
         //Check that the exponent value is positive (>=127)
         if(in1[14:7] >= 127) begin

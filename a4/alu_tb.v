@@ -16,10 +16,10 @@ module alu_tb;
     wire `WORD z;
     reg [4:0] ALUop;
    
-    reg `WORD Xvector[0:20];
-    reg `WORD Yvector[0:20];
-    reg `WORD Zvector[0:20];
-    reg [4:0] OpVector[0:20];
+    reg `WORD Xvector[0:19];
+    reg `WORD Yvector[0:19];
+    reg `WORD Zvector[0:19];
+    reg [4:0] OpVector[0:19];
     
     integer test_num, test_num_max;
 
@@ -31,24 +31,25 @@ module alu_tb;
     initial begin
         correct = 0;
         failed = 0;
-        test_num_max = 9;
+        test_num_max = 16;
 
         X = 0;
         Y = 0;
         $dumpfile("results.vcd");
         $dumpvars(0, alu_tb);
        
-        /* 
+        // 
         $readmemh("tests/aluXVector.vmem", Xvector);
         $readmemh("tests/aluYVector.vmem", Yvector);
         $readmemh("tests/aluZVector.vmem", Zvector);
         $readmemb("tests/aluOpVector.vmem", OpVector);
-        */
+        //
+        /*
         $readmemh("tests/Xcurr.vmem", Xvector);
         $readmemh("tests/Ycurr.vmem", Yvector);
         $readmemh("tests/Zcurr.vmem", Zvector);
         $readmemb("tests/OPcurr.vmem", OpVector);
-        //
+        */
 
         $display("OP   :X    :Y    :Z    :Expected");
         for(test_num = 0; test_num < test_num_max; test_num = test_num + 1) begin
@@ -59,7 +60,7 @@ module alu_tb;
 
             $display("%b: %x: %x: %x: %x", ALUop, X, Y, Z, Zvector[test_num]);
             if (Zvector[test_num] != Z) begin
-                $display("Failure test %d", test_num);
+                $display("Failure test %d, difference of %d", test_num, (Zvector[test_num] -Z));
                 failed = failed + 1;
             end else begin
                 correct = correct + 1;
