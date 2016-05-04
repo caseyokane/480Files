@@ -222,7 +222,7 @@ always @(*) begin
         end
         //If signs aren't the same subtract the mantissas
         else begin
-          rsltMant = bgMant + smMant;
+          rsltMant = bgMant - smMant;
         end
         
         //set the sign bit
@@ -235,7 +235,7 @@ always @(*) begin
         result = {signBit, expVal, mantissa};
 
         //Look at overflow/underflow and set to the max/min based on case
-        //DDT: A lot of the addf portion might be incorrect other than cases at 
+        //DidntDo: A lot of the addf portion might be incorrect other than cases at 
         //beginning 
       end
 
@@ -258,26 +258,23 @@ always @(*) begin
       expVal1 = in1[14:7];
       expVal2 = in2[14:7];
       
-      /*
       //Mantissa = new mantissa[13:6]
       if(temV[15])begin 
         temexpVal = 1; 
-        mantissa[6:0] = temV[13:6];
-        //mantissa[6:0] = temV[14:8];
       end
       
       else begin 
         temexpVal = 0; 
-        mantissa[6:0] = temV[13:6]; 
-        //mantissa[6:0] = temV[13:7]; 
       end
-      */
 
       //mantissa = new mantissa[13:6]
       mantissa = temV[13:6];
       
       //add the exponents together and subtract the bias value
-      expVal = expVal1 + expVal2 - 127;
+      expVal = expVal1 + expVal2 -127;      
+
+      //HOW IT SHOULD WORK
+      //expVal = (expVal1 + expVal2 + temexpVal + 127);
 
       
       //Concatenate all values together
