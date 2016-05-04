@@ -23,6 +23,8 @@ main:
   ld   $u10,$u8 ; u10=0x0042
   dup  $u11,$zero ; u11=0
   li   $u12,taken
+  sz $u11   ;Should squash the following li and still make the jump to taken
+  li   $u12,good
   jz   $u11,$u12
   dup  $u11,$one ; should not happen
 taken:
@@ -37,6 +39,18 @@ nottaken:
   sz   $u14
   dup  $u14,$one
   dup  $u15,$zero ; u15=0x0000
+  li  $u13, 0x3f00 ; u13 = 0.5
+  invf $u13, $u13 ; u13 = 2.0
+  f2i  $u13, $u13 ; u13 = 2 (int)
+  i2f  $u13, $u13 ; u13 = 2.0 (float)
+  li  $u14, 0x3fc0 ; u14 = 1.5
+  mulf $u13, $u14 ; u13 =3.0
+  li  $u15, 0xc040 ; u15 = -3.0
+  addf $u13, $u15 ; u13 = 0
+  dup $u14, $zero
+  li $u15, good   ;Assign u14/u15 to prepare for jump if result of u13 isn't 0
+  sz $u13
+  jz $u14, $u15
   sys
 good:
   dup  $u15,$all ; should not execute
