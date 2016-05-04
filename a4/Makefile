@@ -2,15 +2,14 @@ VERILOG = iverilog
 SIMENGINE = vvp
 WAVEVIEWER = gtkwave
 
-MODULES=alu.v
+MODULES=floatpipe.v
 COMPILED=dsn
-TESTS=alu_tb.v
 SIMS=results.vcd
 
 all: $(SIMS)
 
-$(COMPILED): $(MODULES) $(TESTS)
-	$(VERILOG) -o $(COMPILED) $(MODULES) $(TESTS)
+$(COMPILED): $(MODULES) 
+	$(VERILOG) -o $(COMPILED) $(MODULES) 
 
 $(SIMS): $(COMPILED)
 	$(SIMENGINE) $(COMPILED)
