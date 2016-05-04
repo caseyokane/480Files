@@ -60,7 +60,7 @@ module alu_tb;
 
             $display("%b: %x: %x: %x: %x", ALUop, X, Y, Z, Zvector[test_num]);
             if (Zvector[test_num] != Z) begin
-                $display("Failure test %d, difference of %d", test_num, (Zvector[test_num] -Z));
+                $display("Failure test %d", test_num);
                 failed = failed + 1;
             end else begin
                 correct = correct + 1;
